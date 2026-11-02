@@ -627,7 +627,8 @@ async function publishOnline(force){
   const tastings=state.wines.filter(w=>w.kind==='tasting');
   btn.disabled=true; st.className='pub-status'; st.textContent='Preparazione…';
   try{
-    const oldSigs = force ? {} : await getPubSigs();
+    const realSigs = await getPubSigs();
+    const oldSigs = force ? {} : realSigs;
     const newSigs={}; const curIds={}; const toUpsert=[];
     for(const w of tastings){
       let foto=null; if(w.hasImg){ foto=await getImage(w.id); }
@@ -639,13 +640,9 @@ async function publishOnline(force){
       newSigs[w.id]=sig; curIds[w.id]=1;
       if(oldSigs[w.id]!==sig){ const thumb=foto?await makeThumb(foto):null; toUpsert.push(Object.assign({id:w.id,foto:foto,foto_thumb:thumb,fonte:'proprietario',stato:'approvato'},meta)); }
     }
-    const toDelete = force ? [] : Object.keys(oldSigs).filter(id=>!curIds[id]);
+    const toDelete = Object.keys(realSigs).filter(id=>!curIds[id]);
     st.textContent='Pubblicazione…';
-    if(force){
-      // ripristino pulito: rimuovo tutte le MIE righe (proprietario o senza etichetta), poi reinserisco
-      let r=await fetch(url+'/rest/v1/degustazioni?or=(fonte.eq.proprietario,fonte.is.null)',{method:'DELETE',headers:H});
-      if(!r.ok && r.status!==404) throw new Error('DELETE '+r.status);
-    } else if(toDelete.length){
+    if(toDelete.length){
       const idlist=toDelete.map(encodeURIComponent).join(',');
       let r=await fetch(url+'/rest/v1/degustazioni?id=in.('+idlist+')',{method:'DELETE',headers:H});
       if(!r.ok && r.status!==404) throw new Error('DELETE '+r.status);
