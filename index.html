@@ -1,0 +1,1353 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Mia Cantina</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Mia Cantina">
+<meta name="theme-color" content="#140a0d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cellar:#140a0d;--cellar-2:#1d1013;--surface:#241419;--surface-2:#2c191f;
+    --line:#3a2229;--bordeaux:#7a2233;--wine:#a23246;--gold:#c9a24b;--gold-soft:#e6cd8f;
+    --parchment:#f0e7d6;--muted:#a48b83;--muted-2:#7c645f;--danger:#b9564a;--ok:#6f9a5a;
+    --shadow:0 18px 50px -20px rgba(0,0,0,.8);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #2a141a 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #21121a 0%, transparent 55%),
+      var(--cellar);
+    color:var(--parchment);font-family:'Inter',system-ui,-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:26px 20px 90px}
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .brand h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(30px,6vw,46px);line-height:1;margin:0;letter-spacing:.3px}
+  .brand .sub{color:var(--gold);font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-top:8px}
+  .add-btn{display:inline-flex;align-items:center;gap:9px;cursor:pointer;background:linear-gradient(180deg,var(--wine),var(--bordeaux));color:var(--parchment);border:1px solid #93394a;border-radius:999px;padding:12px 20px;font-size:14px;font-weight:600;letter-spacing:.3px;box-shadow:0 10px 24px -12px rgba(162,50,70,.9);transition:transform .12s ease,filter .12s ease}
+  .add-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .add-btn .plus{font-size:20px;line-height:0;margin-top:-2px}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:22px 0 8px}
+  .stat{background:linear-gradient(180deg,var(--surface),var(--cellar-2));border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .k{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;margin-top:4px;color:var(--gold-soft)}
+  .stat .v small{font-size:15px;color:var(--muted);font-family:'Inter',sans-serif;font-weight:500}
+
+  .controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 6px}
+  .tabs{display:inline-flex;background:var(--cellar-2);border:1px solid var(--line);border-radius:999px;padding:4px;flex-wrap:wrap}
+  .tab{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;transition:.15s}
+  .tab.active{background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--parchment);box-shadow:inset 0 0 0 1px var(--line)}
+  .tab .count{color:var(--gold);margin-left:6px;font-variant-numeric:tabular-nums}
+  .controls-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  select.sort{background:var(--cellar-2);color:var(--parchment);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;font-size:13px;cursor:pointer}
+  .mini{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.14s}
+  .mini:hover{color:var(--parchment);border-color:#5a3540}
+  .mini input{display:none}
+  .data-note{font-size:11.5px;color:var(--muted-2);margin:2px 0 16px}
+  .tsearch{margin:0 0 16px}
+  .tsearch input{width:100%;max-width:420px;background:var(--panel-2,#1a0f13);border:1px solid var(--line);border-radius:12px;color:var(--parchment);font:inherit;font-size:15px;padding:11px 14px}
+  .tsearch input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,75,.15)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:18px;margin-top:8px}
+  .card{position:relative;background:linear-gradient(180deg,var(--surface),var(--cellar-2));border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .14s ease,border-color .14s ease}
+  .card:hover{transform:translateY(-3px);border-color:#4a2b33}
+  .photo{position:relative;aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#20121a,#20121a 12px,#241420 12px,#241420 24px);overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo .noimg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted-2)}
+  .photo .noimg svg{width:38px;height:38px;opacity:.5}
+  .photo .noimg span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+  .score{position:absolute;top:10px;right:10px;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;color:#1a0e10;background:var(--gold);box-shadow:0 4px 14px -4px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.25);border:2px solid rgba(0,0,0,.15)}
+  .score.s-none{background:#4a3a32;color:var(--muted);font-size:13px}
+  .qbadge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:4px;background:rgba(20,10,13,.82);border:1px solid var(--line);color:var(--gold-soft);border-radius:999px;padding:4px 10px 4px 8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .qbadge svg{width:12px;height:12px}
+  .body{padding:14px 15px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .producer{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:-2px}
+  .name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;line-height:1.15}
+  .meta{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px}
+  .year{color:var(--gold-soft);font-size:14px;font-weight:600;letter-spacing:1px}
+  .price{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+  .subline{font-size:11.5px;color:var(--muted-2);border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;display:flex;flex-direction:column;gap:3px}
+  .subline .place{color:var(--parchment);font-size:12.5px;display:flex;align-items:center;gap:5px}
+  .subline .place svg{width:12px;height:12px;flex:0 0 auto;color:var(--gold)}
+  .subline a.map{color:var(--gold);text-decoration:none;font-size:11.5px}
+  .subline a.map:hover{text-decoration:underline}
+  .card-actions{display:flex;gap:8px;margin-top:auto;padding-top:10px}
+  .act{flex:1;border:1px solid var(--line);background:var(--surface-2);color:var(--parchment);font:inherit;font-size:12.5px;font-weight:600;padding:9px;border-radius:9px;cursor:pointer;transition:.14s;text-align:center}
+  .act:hover{border-color:#5a3540}
+  .act.drink{background:linear-gradient(180deg,#3a2a1c,#2e2016);border-color:#5a4326;color:var(--gold-soft)}
+  .act.back{background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .act.del{flex:0 0 auto;color:var(--danger);width:40px}
+  .act.plusb{flex:0 0 auto;width:36px;color:var(--gold-soft);font-size:16px}
+  .qtag{display:inline-flex;align-items:center;justify-content:center;padding:0 6px;font-size:13px;font-weight:600;color:var(--gold-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--muted)}
+  .empty h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--parchment);margin:0 0 8px;font-weight:500}
+  .empty p{margin:0}
+
+  .giac-summary{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:4px 0 18px}
+  .giac-summary b{color:var(--gold-soft);font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-right:5px}
+  .giac-group{background:linear-gradient(180deg,var(--surface),var(--cellar-2));border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+  .giac-head{display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .14s}
+  .giac-head.giac-head-static{cursor:default}
+  .giac-head.giac-head-static:hover{background:transparent}
+  .tview{display:inline-flex;background:var(--cellar-2);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:16px;gap:2px;flex-wrap:wrap}
+  .tview-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:12.5px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.15s}
+  .tview-btn.active{background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--parchment);box-shadow:inset 0 0 0 1px var(--line)}
+  .tview-btn.clean-btn{margin-left:8px;color:#e6b8b8;box-shadow:inset 0 0 0 1px #6a3a3a}
+  .tview-btn.clean-btn:hover{background:linear-gradient(180deg,#3a2020,#301616)}
+  .giac-head:hover{background:rgba(201,162,75,.06)}
+  .giac-head:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+  .giac-chevron{color:var(--muted-2);font-size:24px;line-height:1;transition:transform .14s,color .14s}
+  .giac-head:hover .giac-chevron{color:var(--gold);transform:translateX(2px)}
+  .year-chip{display:inline-flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 16px;font-size:13.5px;font-weight:600;color:var(--parchment);margin-bottom:16px}
+  .year-chip button{border:0;background:var(--cellar);color:var(--muted);width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;transition:.14s}
+  .year-chip button:hover{color:var(--parchment);background:var(--bordeaux)}
+  .giac-year{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--gold-soft);line-height:1;min-width:76px}
+  .giac-year.none{font-size:17px;color:var(--muted);font-family:'Inter',sans-serif}
+  .giac-year.prod{font-size:21px;min-width:0;flex:1;color:var(--parchment);line-height:1.15;word-break:break-word}
+  .giac-nums{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;margin-left:auto;text-align:right}
+  .giac-count{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+  .giac-count b{color:var(--gold);margin-right:4px;font-variant-numeric:tabular-nums}
+  .giac-val{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;align-self:center}
+  .giac-bottles{display:flex;flex-direction:column}
+  .giac-bottle{display:flex;align-items:center;gap:12px;padding:11px 18px;font-size:14px;border-top:1px solid rgba(58,34,41,.5);cursor:pointer;transition:background .12s}
+  .giac-bottle:hover{background:rgba(201,162,75,.06)}
+  .giac-bottle:first-child{border-top:0}
+  .giac-bottle .bn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .giac-bottle .bp{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+  .giac-bottle .bq{color:var(--gold-soft);font-size:12.5px;font-weight:600;white-space:nowrap}
+  .giac-bottle .by{color:var(--muted-2);font-size:12.5px;font-weight:500}
+  .giac-bottle .bv{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;color:#1a0e10}
+  .giac-bottle .bv.none{background:#3a2a24;color:var(--muted);font-size:11px;font-family:'Inter',sans-serif}
+
+  .overlay{position:fixed;inset:0;background:rgba(8,4,6,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto;z-index:50}
+  .overlay.open{display:flex}
+  .modal{width:100%;max-width:460px;background:linear-gradient(180deg,var(--surface),var(--cellar-2));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 22px;margin:auto 0}
+  .modal h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;margin:0 0 16px}
+  .seg{display:flex;background:var(--cellar);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:18px}
+  .seg-btn{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:13px;padding:10px;border-radius:9px;cursor:pointer;transition:.15s}
+  .seg-btn.active{background:linear-gradient(180deg,var(--wine),var(--bordeaux));color:var(--parchment)}
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .field input{width:100%;background:var(--cellar);border:1px solid var(--line);border-radius:10px;color:var(--parchment);font:inherit;font-size:15px;padding:12px 13px}
+  .field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,75,.15)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .photo-pick{position:relative;aspect-ratio:3/4;max-height:220px;border:1.5px dashed var(--line);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--cellar)}
+  .photo-pick:hover{border-color:var(--gold)}
+  .photo-pick img{width:100%;height:100%;object-fit:cover}
+  .photo-pick .hint{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted)}
+  .photo-pick .hint svg{width:34px;height:34px}
+  .photo-pick .hint span{font-size:12px;letter-spacing:1px}
+  .photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  #tastingFields{display:none}
+  .recall-select{width:100%;background:var(--cellar);border:1px solid var(--line);border-radius:10px;color:var(--parchment);font:inherit;font-size:15px;padding:12px 13px;cursor:pointer}
+  .recall-select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,75,.15)}
+  .mini-hint{font-size:11.5px;color:var(--muted-2);margin-top:7px;line-height:1.4}
+  .sync-dot{width:10px;height:10px;border-radius:50%;background:#555;display:inline-block;flex:0 0 auto}
+  .sync-dot.ok{background:#6a9e52}
+  .sync-dot.busy{background:#c9a24b}
+  .sync-dot.err{background:#b0544e}
+  .sync-on{font-size:13px;color:#9ec27a;margin:2px 0 4px}
+  .pub-intro{font-size:13.5px;color:var(--muted);line-height:1.5;margin:0 0 18px}
+  .pub-intro b{color:var(--gold-soft)}
+  .pub-status{font-size:13px;color:var(--muted);min-height:18px;margin-top:4px}
+  .pub-status.ok{color:var(--gold-soft)}
+  .pub-status.err{color:var(--danger)}
+  .mod-sep{height:1px;background:var(--line);margin:20px 0 14px}
+  .mod-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .pend{background:var(--cellar);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+  .pend .pt{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600}
+  .pend .pm{font-size:12.5px;color:var(--muted);margin:2px 0 10px}
+  .pend .pm b{color:var(--gold-soft)}
+  .pend .ctext{font-size:14px;color:var(--parchment);margin:0 0 10px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
+  .rtot{font-size:13.5px;color:var(--muted);margin:4px 0 8px}
+  .rtot b{color:var(--gold-soft);font-variant-numeric:tabular-nums}
+  .rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 2px;border-top:1px solid rgba(58,34,41,.5);font-size:13.5px}
+  .rrow .rn{color:var(--parchment)}
+  .rrow .rc{display:flex;gap:14px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+  .rrow .up{color:#9ec27a}
+  .rrow .dn{color:#d38893}
+  .pend-actions{display:flex;gap:8px}
+  .pend-actions button{flex:1;font:inherit;font-weight:600;font-size:12.5px;padding:8px;border-radius:9px;cursor:pointer;border:1px solid var(--line);transition:.14s}
+  .pend-actions .ap{background:linear-gradient(180deg,#2a3a24,#20301a);border-color:#4a6a3a;color:#cfe6b8}
+  .pend-actions .rj{background:var(--surface-2);color:var(--danger)}
+  .edit-btn{position:absolute;bottom:8px;right:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(20,10,13,.82);color:var(--parchment);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:.14s;padding:0}
+  .edit-btn:hover{border-color:var(--gold);color:var(--gold-soft)}
+  .edit-btn svg{width:14px;height:14px}
+  .review-btn{position:absolute;bottom:8px;left:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(20,10,13,.82);color:var(--gold-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:.14s;padding:0}
+  .review-btn:hover{border-color:var(--gold);background:linear-gradient(180deg,#3a2a1c,#2e2016)}
+  .review-btn svg{width:16px;height:16px}
+  .geo-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);color:var(--parchment);font:inherit;font-size:13.5px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer;transition:.14s}
+  .geo-btn:hover{border-color:var(--gold)}
+  .geo-btn svg{width:16px;height:16px;color:var(--gold)}
+  .geo-status{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px}
+  .geo-status.ok{color:var(--gold-soft)}
+  .geo-status.err{color:var(--danger)}
+  .modal-actions{display:flex;gap:10px;margin-top:22px}
+  .btn{flex:1;font:inherit;font-weight:600;font-size:14px;padding:13px;border-radius:11px;cursor:pointer;border:1px solid var(--line);transition:.14s}
+  .btn.ghost{background:transparent;color:var(--muted)}
+  .btn.ghost:hover{color:var(--parchment)}
+  .btn.primary{background:linear-gradient(180deg,var(--wine),var(--bordeaux));color:var(--parchment);border-color:#93394a}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--surface-2);border:1px solid var(--line);color:var(--parchment);padding:12px 20px;border-radius:999px;font-size:14px;box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:520px){
+    .stats{grid-template-columns:1fr 1fr}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+    .score{width:42px;height:42px;font-size:18px}
+    .name{font-size:17px}
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>La Mia Cantina</h1>
+      <div class="sub">Catalogo &amp; degustazioni</div>
+    </div>
+    <button class="add-btn" onclick="openModal()"><span class="plus">+</span> Aggiungi vino</button>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="tabs">
+      <button class="tab active" data-filter="cellar" onclick="setFilter('cellar')">In cantina <span class="count" id="c-cellar">0</span></button>
+      <button class="tab" data-filter="tasting" onclick="setFilter('tasting')">Degustazioni <span class="count" id="c-tasting">0</span></button>
+      <button class="tab" data-filter="giacenza" onclick="setFilter('giacenza')">Giacenza per annata</button>
+      <button class="tab" data-filter="producer" onclick="setFilter('producer')">Per produttore</button>
+    </div>
+    <div class="controls-right">
+      <select class="sort" id="sort" onchange="render()">
+        <option value="added">Ordina: più recenti</option>
+        <option value="voto">Ordina: voto</option>
+        <option value="prezzo">Ordina: prezzo</option>
+        <option value="annata">Ordina: annata</option>
+        <option value="nome">Ordina: nome</option>
+      </select>
+      <button class="mini" onclick="exportBackup()">↓ Esporta backup</button>
+      <label class="mini">↑ Importa<input type="file" id="importInput" accept="application/json"></label>
+      <button class="mini" onclick="openPublish()">☁ Pubblica online</button>
+    </div>
+  </div>
+  <div class="data-note" id="dataNote"></div>
+
+  <div class="tsearch" id="tsearch" style="display:none"><input id="tq" type="search" placeholder="Cerca per produttore o nome…" oninput="onTastingSearch()" autocomplete="off"></div>
+
+  <div id="content"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modal-title">Aggiungi un vino</h2>
+    <div class="seg">
+      <button class="seg-btn active" data-kind="inventory" onclick="setKind('inventory')">In cantina</button>
+      <button class="seg-btn" data-kind="tasting" onclick="setKind('tasting')">Degustazione</button>
+    </div>
+    <div class="field" id="recallCellarField">
+      <label for="f-rebuy">Ricompri un vino già inserito?</label>
+      <select id="f-rebuy" class="recall-select" onchange="onRebuyChange()"><option value="">— Vino nuovo —</option></select>
+      <div class="mini-hint" id="rebuyHint" style="display:none">Stesso vino: se è un'annata diversa cambiala qui e verrà creata una voce separata (con prezzo e voto propri). Stessa annata → le bottiglie si sommano.</div>
+    </div>
+    <div class="field">
+      <div class="photo-pick" id="photoPick">
+        <div class="hint" id="photoHint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9a2 2 0 0 1 2-2h1.5l1-1.5h5l1 1.5H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><circle cx="12" cy="13" r="3.2"/></svg>
+          <span>Fotografa l'etichetta</span>
+        </div>
+        <img id="photoPreview" style="display:none" alt="">
+        <input type="file" id="photoInput" accept="image/*">
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-prod">Produttore</label>
+      <input id="f-prod" type="text" placeholder="Es. Tenuta X" autocomplete="off" list="dl-prod" oninput="refreshNameDatalist()">
+      <datalist id="dl-prod"></datalist>
+    </div>
+    <div class="field">
+      <label for="f-nome">Nome del vino</label>
+      <input id="f-nome" type="text" placeholder="Es. Barolo Riserva" autocomplete="off" list="dl-nome">
+      <datalist id="dl-nome"></datalist>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="f-annata">Annata</label><input id="f-annata" type="number" inputmode="numeric" placeholder="2019" min="1900" max="2100"></div>
+      <div class="field"><label for="f-prezzo">Prezzo a bottiglia (€)</label><input id="f-prezzo" type="number" inputmode="decimal" placeholder="35" min="0" step="0.01"></div>
+    </div>
+    <div class="field" id="qtyField"><label for="f-qty">Quantità (bottiglie)</label><input id="f-qty" type="number" inputmode="numeric" value="1" min="1" step="1"></div>
+    <div class="field"><label for="f-voto">Voto (in centesimi, 0–100)</label><input id="f-voto" type="number" inputmode="numeric" placeholder="92" min="0" max="100"></div>
+    <div id="tastingFields">
+      <div class="field" id="recallField">
+        <label for="f-fromcellar">Richiama dalla cantina</label>
+        <select id="f-fromcellar" class="recall-select" onchange="onRecallChange()"><option value="">— Vino nuovo (non dalla cantina) —</option></select>
+      </div>
+      <div class="field"><label for="f-locale">Locale / luogo</label><input id="f-locale" type="text" placeholder="Es. Osteria da Mario" autocomplete="off"></div>
+      <button class="geo-btn" id="geoBtn" onclick="detectLocation()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10Z"/><circle cx="12" cy="11" r="2.2"/></svg>
+        Usa la posizione attuale
+      </button>
+      <div class="geo-status" id="geoStatus"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn primary" id="saveBtn" onclick="saveWine()">Salva in cantina</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="pubOverlay">
+  <div class="modal">
+    <h2>Pubblica online</h2>
+    <p class="pub-intro">Invia le tue <b>degustazioni</b> al sito pubblico. La pubblicazione aggiorna solo le <b>tue</b> recensioni e non tocca quelle proposte da altri.</p>
+    <div class="field"><label for="p-name">Il tuo nome (autore)</label><input id="p-name" type="text" placeholder="Es. Luca" autocomplete="off"></div>
+    <div class="field"><label for="p-url">Supabase — Project URL</label><input id="p-url" type="text" placeholder="https://xxxx.supabase.co" autocomplete="off"></div>
+    <div class="field"><label for="p-key">Supabase — chiave (anon o publishable)</label><input id="p-key" type="text" placeholder="sb_publishable_… oppure eyJ…" autocomplete="off"></div>
+    <div class="pub-status" id="pubStatus"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closePublish()">Chiudi</button>
+      <button class="btn primary" id="pubBtn" onclick="publishOnline()">Pubblica ora</button>
+    </div>
+    <div class="mini-hint" style="margin-top:8px">Vengono inviate solo le degustazioni <b>nuove o modificate</b>. <a href="#" onclick="publishOnline(true);return false;" style="color:var(--gold)">Ripubblica tutto da capo</a></div>
+
+    <div class="mod-sep"></div>
+    <div class="mod-head">
+      <span>Sincronizza la cantina tra i tuoi dispositivi</span>
+      <span class="sync-dot" id="syncDot"></span>
+    </div>
+    <p class="mini-hint" style="margin:2px 0 10px">Tiene allineati telefono e computer in automatico, senza esporta/importa. Usa lo <b>stesso codice segreto</b> su tutti i dispositivi. Richiede URL e chiave Supabase qui sopra.</p>
+    <div class="field"><label for="p-sync">Codice segreto di sincronizzazione</label><input id="p-sync" type="text" placeholder="Es. luca-cantina-7391" autocomplete="off"></div>
+    <div class="pub-status" id="syncStatus"></div>
+    <div id="syncControls"></div>
+
+    <div class="mod-sep"></div>
+    <div class="mod-head">
+      <span>Proposte in attesa</span>
+      <button class="mini" id="modLoadBtn" onclick="loadPending()">Controlla</button>
+    </div>
+    <div class="pub-status" id="modStatus"></div>
+    <div id="pendingList"></div>
+
+    <div class="mod-sep"></div>
+    <div class="mod-head">
+      <span>Commenti</span>
+      <button class="mini" id="cmodLoadBtn" onclick="loadComments()">Controlla</button>
+    </div>
+    <div class="pub-status" id="cmodStatus"></div>
+    <div id="commentList"></div>
+
+    <div class="mod-sep"></div>
+    <div class="mod-head">
+      <span>Reazioni (Concordo / Dissento)</span>
+      <button class="mini" id="rmodLoadBtn" onclick="loadReactions()">Controlla</button>
+    </div>
+    <div class="pub-status" id="rmodStatus"></div>
+    <div id="reactionList"></div>
+
+    <div class="mini-hint" style="margin-top:14px">Nome e credenziali restano salvati solo su questo dispositivo.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let state={ wines:[], filter:'cellar', imgCache:{}, pendingImg:null, modalKind:'inventory', pendingLoc:null, backend:null, yearFilter:null, prodFilter:null, recallSourceId:null, rebuySourceId:null, editId:null, tastingView:'list', tastingSearch:'' };
+
+/* ============ archiviazione: usa lo spazio di Claude se presente, altrimenti IndexedDB locale ============ */
+const HAS_CLAUDE_STORAGE = typeof window!=='undefined' && window.storage && typeof window.storage.get==='function';
+let SP=null; // provider con get/set/delete/list
+
+function openKV(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('cantina-db',1);
+    req.onupgradeneeded=e=>{ e.target.result.createObjectStore('kv'); };
+    req.onsuccess=e=>res(e.target.result);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+function idbAdapter(db){
+  const store=m=>db.transaction('kv',m).objectStore('kv');
+  return {
+    get:key=>new Promise((res,rej)=>{const r=store('readonly').get(key);r.onsuccess=()=>res(r.result!==undefined?{value:r.result}:null);r.onerror=()=>rej(r.error);}),
+    set:(key,value)=>new Promise((res,rej)=>{const r=store('readwrite').put(value,key);r.onsuccess=()=>res({value});r.onerror=()=>rej(r.error);}),
+    delete:key=>new Promise((res,rej)=>{const r=store('readwrite').delete(key);r.onsuccess=()=>res({deleted:true});r.onerror=()=>rej(r.error);}),
+    list:prefix=>new Promise((res,rej)=>{const keys=[];const r=store('readonly').openKeyCursor();r.onsuccess=e=>{const c=e.target.result;if(c){if(!prefix||String(c.key).startsWith(prefix))keys.push(c.key);c.continue();}else res({keys});};r.onerror=()=>rej(r.error);})
+  };
+}
+async function initStorage(){
+  if(HAS_CLAUDE_STORAGE){ SP=window.storage; state.backend='claude'; return; }
+  if(typeof indexedDB!=='undefined'){
+    try{ const db=await openKV(); SP=idbAdapter(db); state.backend='idb'; return; }catch(e){}
+  }
+  const mem=new Map();
+  SP={ get:async k=>mem.has(k)?{value:mem.get(k)}:null, set:async(k,v)=>{mem.set(k,v);return{value:v};},
+       delete:async k=>{mem.delete(k);return{deleted:true};}, list:async p=>({keys:[...mem.keys()].filter(k=>!p||k.startsWith(p))}) };
+  state.backend='memory';
+}
+function updateDataNote(){
+  const el=document.getElementById('dataNote'); if(!el) return;
+  if(state.backend==='claude') el.textContent='Dati salvati sul tuo account Claude.';
+  else if(state.backend==='idb') el.textContent='Dati salvati su questo dispositivo. Usa "Esporta backup" per copiarli o spostarli su un altro dispositivo.';
+  else el.textContent='Attenzione: salvataggio non disponibile in questo contesto. Esporta un backup per non perdere i dati.';
+}
+
+/* ---------- indice + immagini ---------- */
+async function loadIndex(){
+  if(!SP) return;
+  try{ const r=await SP.get('index'); if(r && r.value){ const parsed=typeof r.value==='string'?JSON.parse(r.value):r.value; state.wines=parsed.wines||[]; } }
+  catch(e){ state.wines=[]; }
+  normalizeWines();
+}
+function normalizeWines(){
+  state.wines.forEach(w=>{ if(!w.kind) w.kind='inventory'; if(w.produttore===undefined) w.produttore=null; if(w.qty==null){ w.qty = (w.kind==='inventory' && w.status==='consumed') ? 0 : 1; } });
+  // La sezione "Bevuti" non esiste più: i vini già bevuti diventano degustazioni, così non si perdono
+  state.wines.forEach(w=>{ if(w.kind==='inventory' && w.status==='consumed'){ w.kind='tasting'; w.status='tasting'; if(!w.tastedAt) w.tastedAt=w.consumedAt||w.addedAt||Date.now(); w.locale=w.locale||null; if(w.lat===undefined)w.lat=null; if(w.lng===undefined)w.lng=null; } });
+}
+async function saveIndex(){ if(!SP) return; try{ await SP.set('index', JSON.stringify({wines:state.wines})); }catch(e){ toast('Errore nel salvataggio'); } if(syncCfg && syncCfg.on){ pushCantina(); } }
+async function saveImage(id,dataUrl){ if(!SP||!dataUrl) return; try{ await SP.set('img:'+id,dataUrl); state.imgCache[id]=dataUrl; }catch(e){} }
+async function getImage(id){
+  if(id in state.imgCache) return state.imgCache[id];
+  if(!SP){ state.imgCache[id]=null; return null; }
+  try{ const r=await SP.get('img:'+id); const v=r?r.value:null; state.imgCache[id]=v; return v; }catch(e){ state.imgCache[id]=null; return null; }
+}
+async function deleteImage(id){ if(!SP) return; try{ await SP.delete('img:'+id); }catch(e){} delete state.imgCache[id]; }
+
+/* ---------- backup ---------- */
+async function exportBackup(){
+  const data={ app:'cantina', version:1, exportedAt:new Date().toISOString(), wines:state.wines, images:{} };
+  for(const w of state.wines){ if(w.hasImg){ const img=await getImage(w.id); if(img) data.images[w.id]=img; } }
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='cantina-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Backup esportato');
+}
+document.getElementById('importInput').addEventListener('change', async e=>{
+  const file=e.target.files && e.target.files[0]; e.target.value=''; if(!file) return;
+  try{
+    const data=JSON.parse(await file.text());
+    if(!data || !Array.isArray(data.wines)){ toast('File di backup non valido'); return; }
+    const wines=data.wines.map(w=>{ if(!w.kind) w.kind='inventory'; return w; });
+    const before=state.wines.length;
+    if(!confirm('Importare il backup?\n\nIl contenuto attuale ('+before+(before===1?' vino':' vini')+') sarà SOSTITUITO con il backup ('+wines.length+(wines.length===1?' vino':' vini')+').\n\nUsa questa funzione per allineare questo dispositivo a quello da cui hai esportato.')) return;
+    // specchio: il backup diventa il contenuto esatto, così i vini bevuti/eliminati altrove spariscono anche qui
+    const newIds={}; wines.forEach(w=>{ newIds[w.id]=true; });
+    const orphan=state.wines.filter(w=>!newIds[w.id]).map(w=>w.id);
+    for(const id of orphan){ await deleteImage(id); }
+    state.wines=wines;
+    if(data.images){ for(const id of Object.keys(data.images)){ await saveImage(id,data.images[id]); } }
+    await saveIndex(); render(); toast('Backup importato — dispositivo allineato');
+  }catch(err){ toast('Impossibile leggere il backup'); }
+});
+
+/* ---------- pubblicazione online (Supabase) ---------- */
+async function getPubCfg(){ try{ const r=await SP.get('supacfg'); if(r&&r.value){ return typeof r.value==='string'?JSON.parse(r.value):r.value; } }catch(e){} return {url:'',key:'',autore:''}; }
+function pubHeaders(key){ const H={ apikey:key }; if(key.indexOf('eyJ')===0){ H['Authorization']='Bearer '+key; } return H; }
+
+/* ---------- sincronizzazione cantina tra dispositivi (Supabase, tabella "cantina") ---------- */
+let syncCfg={on:false,owner:''};
+let cantinaSigs={};
+let syncBusy=false;
+async function getSyncCfg(){ try{ const r=await SP.get('cantinasync'); if(r&&r.value){ return typeof r.value==='string'?JSON.parse(r.value):r.value; } }catch(e){} return {on:false,owner:''}; }
+async function setSyncCfg(c){ try{ await SP.set('cantinasync', JSON.stringify(c)); }catch(e){} }
+async function getCantinaSigs(){ try{ const r=await SP.get('cantinasigs'); if(r&&r.value){ return typeof r.value==='string'?JSON.parse(r.value):r.value; } }catch(e){} return {}; }
+async function setCantinaSigs(s){ try{ await SP.set('cantinasigs', JSON.stringify(s)); }catch(e){} }
+async function syncCreds(){ const cfg=await getPubCfg(); const url=(cfg.url||'').trim().replace(/\/+$/,''); const key=(cfg.key||'').trim(); if(url.indexOf('http')!==0||key.length<20) return null; return {url,key,H:pubHeaders(key)}; }
+function wineRowBase(w){ return { id:w.id, kind:w.kind||'inventory', produttore:w.produttore||null, nome:w.nome||null, annata:w.annata||null,
+  prezzo:(w.prezzo!=null?w.prezzo:null), voto:(w.voto!=null?w.voto:null), qty:(w.qty!=null?w.qty:null), status:w.status||null,
+  locale:w.locale||null, lat:(w.lat!=null?w.lat:null), lng:(w.lng!=null?w.lng:null),
+  added_at:(w.addedAt!=null?w.addedAt:null), tasted_at:(w.tastedAt!=null?w.tastedAt:null), consumed_at:(w.consumedAt!=null?w.consumedAt:null),
+  has_img:!!w.hasImg, img_at:(w.imgAt!=null?w.imgAt:0) }; }
+function rowToWine(r){ return { id:r.id, kind:r.kind||'inventory', produttore:r.produttore, nome:r.nome, annata:r.annata,
+  prezzo:(r.prezzo!=null?Number(r.prezzo):null), voto:(r.voto!=null?r.voto:null), qty:(r.qty!=null?r.qty:1),
+  status:r.status||(r.kind==='tasting'?'tasting':'cellar'), hasImg:!!r.has_img, imgAt:(r.img_at!=null?r.img_at:0),
+  addedAt:(r.added_at!=null?r.added_at:null), tastedAt:(r.tasted_at!=null?r.tasted_at:null), consumedAt:(r.consumed_at!=null?r.consumed_at:null),
+  locale:r.locale||null, lat:(r.lat!=null?r.lat:null), lng:(r.lng!=null?r.lng:null) }; }
+function wineSig(w){ return hashStr(JSON.stringify(wineRowBase(w))); }
+async function pushCantina(){
+  if(!syncCfg.on || !syncCfg.owner || syncBusy) return;
+  const c=await syncCreds(); if(!c) return;
+  syncBusy=true; setSyncDot('busy');
+  try{
+    const newSigs={}; const cur={}; const toUpsert=[];
+    state.wines.forEach(w=>{ const sig=wineSig(w); newSigs[w.id]=sig; cur[w.id]=1; if(cantinaSigs[w.id]!==sig) toUpsert.push(w); });
+    const toDelete=Object.keys(cantinaSigs).filter(id=>!cur[id]);
+    if(toDelete.length){
+      const idlist=toDelete.map(encodeURIComponent).join(',');
+      const r=await fetch(c.url+'/rest/v1/cantina?owner=eq.'+encodeURIComponent(syncCfg.owner)+'&id=in.('+idlist+')',{method:'DELETE',headers:c.H});
+      if(!r.ok && r.status!==404) throw new Error('DELETE '+r.status);
+    }
+    const chunk=6;
+    for(let i=0;i<toUpsert.length;i+=chunk){
+      const part=[];
+      for(const w of toUpsert.slice(i,i+chunk)){
+        const row=wineRowBase(w); row.owner=syncCfg.owner;
+        row.foto = w.hasImg ? (await getImage(w.id)||null) : null;
+        part.push(row);
+      }
+      const hi=Object.assign({},c.H,{'Content-Type':'application/json',Prefer:'return=minimal, resolution=merge-duplicates'});
+      const r=await fetch(c.url+'/rest/v1/cantina',{method:'POST',headers:hi,body:JSON.stringify(part)});
+      if(!r.ok) throw new Error('POST '+r.status);
+    }
+    cantinaSigs=newSigs; await setCantinaSigs(newSigs);
+    setSyncDot('ok');
+  }catch(e){ setSyncDot('err'); }
+  syncBusy=false;
+}
+async function pullCantina(){
+  if(!syncCfg.on || !syncCfg.owner) return false;
+  const c=await syncCreds(); if(!c) return false;
+  try{
+    const cols='id,kind,produttore,nome,annata,prezzo,voto,qty,status,locale,lat,lng,added_at,tasted_at,consumed_at,has_img,img_at';
+    const r=await fetch(c.url+'/rest/v1/cantina?owner=eq.'+encodeURIComponent(syncCfg.owner)+'&select='+cols,{headers:c.H});
+    if(!r.ok) throw new Error('GET '+r.status);
+    const rows=await r.json();
+    state.wines=rows.map(rowToWine);
+    normalizeWines();
+    const sigs={}; state.wines.forEach(w=>{ sigs[w.id]=wineSig(w); });
+    cantinaSigs=sigs; await setCantinaSigs(sigs);
+    try{ await SP.set('index', JSON.stringify({wines:state.wines})); }catch(e){}
+    setSyncDot('ok');
+    return true;
+  }catch(e){ setSyncDot('err'); return false; }
+}
+async function fetchMissingPhotos(){
+  if(!syncCfg.on || !syncCfg.owner) return;
+  const c=await syncCreds(); if(!c) return;
+  let got=false;
+  for(const w of state.wines){
+    if(!w.hasImg || (w.id in state.imgCache)) continue;
+    let local=null; try{ const r=await SP.get('img:'+w.id); local=r?r.value:null; }catch(e){}
+    if(local){ state.imgCache[w.id]=local; continue; }
+    try{
+      const rr=await fetch(c.url+'/rest/v1/cantina?owner=eq.'+encodeURIComponent(syncCfg.owner)+'&id=eq.'+encodeURIComponent(w.id)+'&select=foto',{headers:c.H});
+      if(rr.ok){ const a=await rr.json(); const foto=(a&&a[0])?a[0].foto:null; if(foto){ try{ await SP.set('img:'+w.id,foto); }catch(e){} state.imgCache[w.id]=foto; got=true; } }
+    }catch(e){}
+  }
+  if(got) render();
+}
+function setSyncDot(s){ const el=document.getElementById('syncDot'); if(!el) return; el.className='sync-dot '+s; el.title = s==='ok'?'Sincronizzato':s==='busy'?'Sincronizzazione…':s==='err'?'Sync non riuscita':''; }
+
+async function openPublish(){
+  const cfg=await getPubCfg();
+  document.getElementById('p-name').value=cfg.autore||'';
+  document.getElementById('p-url').value=cfg.url||'';
+  document.getElementById('p-key').value=cfg.key||'';
+  const st=document.getElementById('pubStatus'); st.textContent=''; st.className='pub-status';
+  document.getElementById('modStatus').textContent=''; document.getElementById('pendingList').innerHTML='';
+  document.getElementById('p-sync').value=syncCfg.owner||'';
+  document.getElementById('syncStatus').textContent=''; document.getElementById('syncStatus').className='pub-status';
+  renderSyncControls();
+  document.getElementById('pubOverlay').classList.add('open');
+}
+function renderSyncControls(){
+  const el=document.getElementById('syncControls'); if(!el) return;
+  if(syncCfg.on){
+    el.innerHTML='<div class="sync-on">✓ Sincronizzazione attiva su questo dispositivo.</div>'+
+      '<div class="modal-actions" style="margin-top:6px">'+
+      '<button class="btn ghost" onclick="syncOff()">Disattiva</button>'+
+      '<button class="btn primary" onclick="syncNow()">Sincronizza ora</button></div>';
+  } else {
+    el.innerHTML='<div class="modal-actions" style="flex-wrap:wrap;gap:8px">'+
+      '<button class="btn primary" onclick="syncEnablePush()">Attiva e carica (questo è il dispositivo con i dati)</button>'+
+      '<button class="btn ghost" onclick="syncEnablePull()">Attiva e scarica (prendi dal cloud)</button></div>';
+  }
+}
+function syncReadOwner(){ const v=(document.getElementById('p-sync').value||'').trim(); return v.replace(/\s+/g,'-').toLowerCase().slice(0,60); }
+async function syncSaveCreds(){
+  const autore=document.getElementById('p-name').value.trim();
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,'');
+  const key=document.getElementById('p-key').value.trim();
+  try{ await SP.set('supacfg', JSON.stringify({url,key,autore})); }catch(e){}
+}
+async function syncEnablePush(){
+  const owner=syncReadOwner(); const ss=document.getElementById('syncStatus');
+  if(owner.length<4){ ss.className='pub-status err'; ss.textContent='Scegli un codice segreto di almeno 4 caratteri.'; return; }
+  await syncSaveCreds();
+  const c=await syncCreds(); if(!c){ ss.className='pub-status err'; ss.textContent='Inserisci URL e chiave Supabase validi qui sopra.'; return; }
+  if(!confirm('Attivo la sincronizzazione e CARICO sul cloud i '+state.wines.length+' vini di questo dispositivo?\n\nUsa questa opzione sul dispositivo che ha i dati giusti (il telefono). Sugli altri dispositivi usa "Attiva e scarica".')) return;
+  ss.className='pub-status'; ss.textContent='Carico sul cloud…';
+  syncCfg={on:true,owner:owner}; await setSyncCfg(syncCfg);
+  cantinaSigs={}; await setCantinaSigs({});
+  await pushCantina();
+  ss.className='pub-status ok'; ss.textContent='Sincronizzazione attiva — dati caricati ✓'; renderSyncControls();
+}
+async function syncEnablePull(){
+  const owner=syncReadOwner(); const ss=document.getElementById('syncStatus');
+  if(owner.length<4){ ss.className='pub-status err'; ss.textContent='Inserisci lo stesso codice segreto usato sull\'altro dispositivo.'; return; }
+  await syncSaveCreds();
+  const c=await syncCreds(); if(!c){ ss.className='pub-status err'; ss.textContent='Inserisci URL e chiave Supabase validi qui sopra.'; return; }
+  if(!confirm('Attivo la sincronizzazione e SCARICO dal cloud, sostituendo i '+state.wines.length+' vini di questo dispositivo con quelli del cloud?')) return;
+  ss.className='pub-status'; ss.textContent='Scarico dal cloud…';
+  syncCfg={on:true,owner:owner}; await setSyncCfg(syncCfg);
+  const ok=await pullCantina();
+  if(ok){ render(); fetchMissingPhotos(); ss.className='pub-status ok'; ss.textContent='Sincronizzazione attiva — dati scaricati ✓'; }
+  else { ss.className='pub-status err'; ss.textContent='Nessun dato trovato con questo codice (o errore). Controlla il codice e le credenziali.'; }
+  renderSyncControls();
+}
+async function syncNow(){
+  const ss=document.getElementById('syncStatus'); ss.className='pub-status'; ss.textContent='Sincronizzo…';
+  await pushCantina();
+  const ok=await pullCantina();
+  if(ok){ render(); fetchMissingPhotos(); }
+  ss.className='pub-status ok'; ss.textContent='Sincronizzato ✓';
+}
+async function syncOff(){
+  if(!confirm('Disattivo la sincronizzazione su questo dispositivo? I dati restano sul cloud e su questo dispositivo, ma smettono di aggiornarsi a vicenda.')) return;
+  syncCfg={on:false,owner:syncCfg.owner}; await setSyncCfg(syncCfg); setSyncDot('');
+  document.getElementById('syncStatus').textContent='Sincronizzazione disattivata.'; renderSyncControls();
+}
+function closePublish(){ document.getElementById('pubOverlay').classList.remove('open'); }
+document.getElementById('pubOverlay').addEventListener('click',e=>{ if(e.target.id==='pubOverlay') closePublish(); });
+
+async function getPubSigs(){ try{ const r=await SP.get('pubsigs'); if(r&&r.value){ return typeof r.value==='string'?JSON.parse(r.value):r.value; } }catch(e){} return {}; }
+function hashStr(str){
+  let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<str.length;i++){ const ch=str.charCodeAt(i); h1=Math.imul(h1^ch,2654435761); h2=Math.imul(h2^ch,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+async function publishOnline(force){
+  const autore=document.getElementById('p-name').value.trim();
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,'');
+  const key=document.getElementById('p-key').value.trim();
+  const st=document.getElementById('pubStatus'); const btn=document.getElementById('pubBtn');
+  if(url.indexOf('http')!==0 || key.length<20){ st.className='pub-status err'; st.textContent='Inserisci un URL e una chiave validi.'; return; }
+  try{ await SP.set('supacfg', JSON.stringify({url,key,autore})); }catch(e){}
+  const H=pubHeaders(key);
+  const tastings=state.wines.filter(w=>w.kind==='tasting');
+  btn.disabled=true; st.className='pub-status'; st.textContent='Preparazione…';
+  try{
+    const oldSigs = force ? {} : await getPubSigs();
+    const newSigs={}; const curIds={}; const toUpsert=[];
+    for(const w of tastings){
+      let foto=null; if(w.hasImg){ foto=await getImage(w.id); }
+      const meta={ produttore:w.produttore||null, nome:w.nome, annata:w.annata||null,
+        prezzo:(w.prezzo!=null?w.prezzo:null), voto:(w.voto!=null?w.voto:null),
+        locale:w.locale||null, lat:(w.lat!=null?w.lat:null), lng:(w.lng!=null?w.lng:null),
+        tasted_at:(w.tastedAt||null), autore:(autore||null) };
+      const sig=hashStr(JSON.stringify(meta))+':'+(foto?hashStr(foto):'0');
+      newSigs[w.id]=sig; curIds[w.id]=1;
+      if(oldSigs[w.id]!==sig){ const thumb=foto?await makeThumb(foto):null; toUpsert.push(Object.assign({id:w.id,foto:foto,foto_thumb:thumb,fonte:'proprietario',stato:'approvato'},meta)); }
+    }
+    const toDelete = force ? [] : Object.keys(oldSigs).filter(id=>!curIds[id]);
+    st.textContent='Pubblicazione…';
+    if(force){
+      // ripristino pulito: rimuovo tutte le MIE righe (proprietario o senza etichetta), poi reinserisco
+      let r=await fetch(url+'/rest/v1/degustazioni?or=(fonte.eq.proprietario,fonte.is.null)',{method:'DELETE',headers:H});
+      if(!r.ok && r.status!==404) throw new Error('DELETE '+r.status);
+    } else if(toDelete.length){
+      const idlist=toDelete.map(encodeURIComponent).join(',');
+      let r=await fetch(url+'/rest/v1/degustazioni?id=in.('+idlist+')',{method:'DELETE',headers:H});
+      if(!r.ok && r.status!==404) throw new Error('DELETE '+r.status);
+    }
+    const chunk=8; let stripThumb=false;
+    for(let i=0;i<toUpsert.length;i+=chunk){
+      let part=toUpsert.slice(i,i+chunk);
+      const hi=Object.assign({},H,{'Content-Type':'application/json',Prefer:'return=minimal, resolution=merge-duplicates'});
+      if(stripThumb){ part=part.map(p=>{ const q=Object.assign({},p); delete q.foto_thumb; return q; }); }
+      let r=await fetch(url+'/rest/v1/degustazioni',{method:'POST',headers:hi,body:JSON.stringify(part)});
+      if(!r.ok && r.status===400 && !stripThumb){
+        // la colonna foto_thumb potrebbe non esistere ancora: riprovo senza miniatura
+        stripThumb=true;
+        part=part.map(p=>{ const q=Object.assign({},p); delete q.foto_thumb; return q; });
+        r=await fetch(url+'/rest/v1/degustazioni',{method:'POST',headers:hi,body:JSON.stringify(part)});
+      }
+      if(!r.ok) throw new Error('POST '+r.status);
+      st.textContent='Invio… '+Math.min(i+chunk,toUpsert.length)+'/'+toUpsert.length;
+    }
+    if(stripThumb){ st.className='pub-status warn'; }
+    try{ await SP.set('pubsigs', JSON.stringify(newSigs)); }catch(e){}
+    const unchanged=tastings.length-toUpsert.length;
+    const parts=[];
+    if(toUpsert.length) parts.push(toUpsert.length+' nuove/aggiornate');
+    if(toDelete.length) parts.push(toDelete.length+' rimosse');
+    if(unchanged>0) parts.push(unchanged+' invariate');
+    st.className='pub-status ok'; st.textContent='Pubblicato ✓ — '+(parts.length?parts.join(', '):'nessuna modifica');
+    toast('Sito pubblico aggiornato');
+  }catch(e){
+    st.className='pub-status err';
+    st.textContent='Errore ('+e.message+'). Controlla URL, chiave e che le colonne/tabelle esistano.';
+  }
+  btn.disabled=false;
+}
+
+/* ---------- moderazione proposte ---------- */
+async function loadPending(){
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,'');
+  const key=document.getElementById('p-key').value.trim();
+  const ms=document.getElementById('modStatus'); const list=document.getElementById('pendingList');
+  if(url.indexOf('http')!==0 || key.length<20){ ms.className='pub-status err'; ms.textContent='Inserisci prima URL e chiave qui sopra.'; return; }
+  ms.className='pub-status'; ms.textContent='Controllo…'; list.innerHTML='';
+  try{
+    const r=await fetch(url+'/rest/v1/degustazioni?stato=eq.in_attesa&select=id,produttore,nome,annata,voto,autore&order=tasted_at.desc.nullslast',{headers:pubHeaders(key)});
+    if(!r.ok) throw new Error('GET '+r.status);
+    const rows=await r.json();
+    if(!rows.length){ ms.textContent='Nessuna proposta in attesa.'; return; }
+    ms.textContent=rows.length+' proposta/e in attesa:';
+    list.innerHTML=rows.map(w=>{
+      const meta=[w.autore?('di '+esc(w.autore)):'', w.annata?esc(w.annata):'', (w.voto!=null?w.voto+'/100':'')].filter(Boolean).join(' · ');
+      return '<div class="pend" data-id="'+w.id+'"><div class="pt">'+((w.produttore?esc(w.produttore)+' — ':'')+esc(w.nome))+'</div>'+
+        '<div class="pm">'+meta+'</div>'+
+        '<div class="pend-actions"><button class="ap" onclick="approvePending(\''+w.id+'\')">Approva</button>'+
+        '<button class="rj" onclick="rejectPending(\''+w.id+'\')">Elimina</button></div></div>';
+    }).join('');
+  }catch(e){ ms.className='pub-status err'; ms.textContent='Errore ('+e.message+').'; }
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function approvePending(id){
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,''); const key=document.getElementById('p-key').value.trim();
+  const H=Object.assign({},pubHeaders(key),{'Content-Type':'application/json',Prefer:'return=minimal'});
+  try{
+    const r=await fetch(url+'/rest/v1/degustazioni?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:H,body:JSON.stringify({stato:'approvato'})});
+    if(!r.ok) throw new Error('PATCH '+r.status);
+    const el=document.querySelector('.pend[data-id="'+id+'"]'); if(el) el.remove();
+    toast('Proposta approvata');
+  }catch(e){ toast('Operazione non riuscita'); }
+}
+async function rejectPending(id){
+  if(!confirm('Eliminare definitivamente questa proposta?')) return;
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,''); const key=document.getElementById('p-key').value.trim();
+  try{
+    const r=await fetch(url+'/rest/v1/degustazioni?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:pubHeaders(key)});
+    if(!r.ok) throw new Error('DELETE '+r.status);
+    const el=document.querySelector('.pend[data-id="'+id+'"]'); if(el) el.remove();
+    toast('Proposta eliminata');
+  }catch(e){ toast('Operazione non riuscita'); }
+}
+
+/* ---------- moderazione commenti ---------- */
+async function loadComments(){
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,'');
+  const key=document.getElementById('p-key').value.trim();
+  const cs=document.getElementById('cmodStatus'); const list=document.getElementById('commentList');
+  if(url.indexOf('http')!==0 || key.length<20){ cs.className='pub-status err'; cs.textContent='Inserisci prima URL e chiave qui sopra.'; return; }
+  cs.className='pub-status'; cs.textContent='Controllo…'; list.innerHTML='';
+  try{
+    const H=pubHeaders(key);
+    const cr=await fetch(url+'/rest/v1/commenti?select=id,wine_id,autore,testo,created_at&order=created_at.desc',{headers:H});
+    if(!cr.ok) throw new Error('GET '+cr.status);
+    const rows=await cr.json();
+    if(!rows.length){ cs.textContent='Ancora nessun commento.'; return; }
+    // mappa id vino -> nome, per mostrare a quale vino si riferisce
+    let names={};
+    try{
+      const dr=await fetch(url+'/rest/v1/degustazioni?select=id,produttore,nome',{headers:H});
+      if(dr.ok){ (await dr.json()).forEach(w=>{ names[w.id]=(w.produttore?w.produttore+' — ':'')+w.nome; }); }
+    }catch(e){}
+    cs.textContent=rows.length+' commento/i:';
+    list.innerHTML=rows.map(c=>{
+      const vino=names[c.wine_id]||'(vino non trovato)';
+      const data=c.created_at?new Date(c.created_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}):'';
+      return '<div class="pend" data-cid="'+c.id+'"><div class="pt">'+esc(c.autore||'Anonimo')+'</div>'+
+        '<div class="pm">su <b>'+esc(vino)+'</b>'+(data?' · '+data:'')+'</div>'+
+        '<div class="ctext">'+esc(c.testo||'')+'</div>'+
+        '<div class="pend-actions"><button class="rj" onclick="deleteComment(\''+c.id+'\')">Elimina commento</button></div></div>';
+    }).join('');
+  }catch(e){ cs.className='pub-status err'; cs.textContent='Errore ('+e.message+').'; }
+}
+async function deleteComment(id){
+  if(!confirm('Eliminare definitivamente questo commento?')) return;
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,''); const key=document.getElementById('p-key').value.trim();
+  try{
+    const r=await fetch(url+'/rest/v1/commenti?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:pubHeaders(key)});
+    if(!r.ok) throw new Error('DELETE '+r.status);
+    const el=document.querySelector('.pend[data-cid="'+id+'"]'); if(el) el.remove();
+    toast('Commento eliminato');
+  }catch(e){ toast('Operazione non riuscita'); }
+}
+
+/* ---------- riepilogo reazioni (concordo/dissento) ---------- */
+async function loadReactions(){
+  const url=document.getElementById('p-url').value.trim().replace(/\/+$/,'');
+  const key=document.getElementById('p-key').value.trim();
+  const rs=document.getElementById('rmodStatus'); const list=document.getElementById('reactionList');
+  if(url.indexOf('http')!==0 || key.length<20){ rs.className='pub-status err'; rs.textContent='Inserisci prima URL e chiave qui sopra.'; return; }
+  rs.className='pub-status'; rs.textContent='Controllo…'; list.innerHTML='';
+  try{
+    const H=pubHeaders(key);
+    const rr=await fetch(url+'/rest/v1/reazioni?select=wine_id,tipo',{headers:H});
+    if(!rr.ok) throw new Error('GET '+rr.status);
+    const rows=await rr.json();
+    if(!rows.length){ rs.textContent='Ancora nessun voto.'; return; }
+    const cnt={}; let tC=0,tD=0;
+    rows.forEach(r=>{ const o=cnt[r.wine_id]=cnt[r.wine_id]||{c:0,d:0}; if(r.tipo==='concordo'){o.c++;tC++;} else if(r.tipo==='dissento'){o.d++;tD++;} });
+    let names={};
+    try{
+      const dr=await fetch(url+'/rest/v1/degustazioni?select=id,produttore,nome',{headers:H});
+      if(dr.ok){ (await dr.json()).forEach(w=>{ names[w.id]=(w.produttore?w.produttore+' — ':'')+w.nome; }); }
+    }catch(e){}
+    const ids=Object.keys(cnt).sort((a,b)=>(cnt[b].c+cnt[b].d)-(cnt[a].c+cnt[a].d));
+    rs.textContent='';
+    let html='<div class="rtot">Totale: <b>'+tC+'</b> concordo · <b>'+tD+'</b> dissento</div>';
+    html+=ids.map(id=>{
+      const nm=names[id]||'(vino non trovato)';
+      return '<div class="rrow"><span class="rn">'+esc(nm)+'</span><span class="rc"><span class="up">Concordo '+cnt[id].c+'</span><span class="dn">Dissento '+cnt[id].d+'</span></span></div>';
+    }).join('');
+    list.innerHTML=html;
+  }catch(e){ rs.className='pub-status err'; rs.textContent='Errore ('+e.message+'). Se dice 404, la tabella reazioni non è ancora stata creata.'; }
+}
+function compressImage(file,maxDim=760,quality=0.72){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{ const img=new Image();
+      img.onload=()=>{ let w=img.width,h=img.height;
+        if(w>=h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; } else if(h>w && h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+        const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
+        try{ resolve(c.toDataURL('image/jpeg',quality)); }catch(err){ reject(err); } };
+      img.onerror=reject; img.src=e.target.result; };
+    reader.onerror=reject; reader.readAsDataURL(file);
+  });
+}
+function makeThumb(dataUrl,maxDim=130,quality=0.5){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{ let w=img.width,h=img.height;
+      if(w>=h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; } else if(h>w && h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+      const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
+      try{ resolve(c.toDataURL('image/jpeg',quality)); }catch(err){ resolve(null); } };
+    img.onerror=()=>resolve(null); img.src=dataUrl;
+  });
+}
+
+/* ---------- modal ---------- */
+function setKind(k){
+  state.modalKind=k;
+  const editing=!!state.editId;
+  document.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.kind===k));
+  document.getElementById('tastingFields').style.display = k==='tasting'?'block':'none';
+  document.getElementById('qtyField').style.display = k==='tasting'?'none':'block';
+  document.getElementById('recallCellarField').style.display = (k==='inventory' && !editing)?'block':'none';
+  document.getElementById('recallField').style.display = (k==='tasting' && !editing)?'block':'none';
+  document.getElementById('modal-title').textContent = editing
+    ? (k==='tasting'?'Modifica degustazione':'Modifica vino')
+    : (k==='tasting'?'Registra una degustazione':'Aggiungi un vino');
+  document.getElementById('saveBtn').textContent = editing ? 'Salva modifiche' : (k==='tasting'?'Salva degustazione':'Salva in cantina');
+  if(!editing){
+    setRebuyReadonly(false); document.getElementById('rebuyHint').style.display='none';
+    if(k==='tasting'){ populateRecall(); state.rebuySourceId=null; } else { populateRebuy(); state.recallSourceId=null; }
+  }
+}
+function populateRebuy(){
+  const sel=document.getElementById('f-rebuy'); if(!sel) return;
+  const wines=state.wines.filter(w=>w.kind==='inventory').sort((a,b)=>a.nome.localeCompare(b.nome,'it'));
+  sel.innerHTML='<option value="">— Vino nuovo —</option>'+wines.map(w=>{
+    const tag = w.status==='cellar' ? ('in cantina ×'+(w.qty||1)) : 'bevuto';
+    const pr = w.produttore?escapeHtml(w.produttore)+' · ':'';
+    return `<option value="${w.id}">${pr}${escapeHtml(w.nome)}${w.annata?' — '+escapeHtml(w.annata):''} · ${tag}</option>`;
+  }).join('');
+  sel.value='';
+}
+function setRebuyReadonly(on){ ['f-prod','f-nome'].forEach(x=>{ document.getElementById(x).readOnly=on; }); }
+function populateDatalists(){
+  const prods=[...new Set(state.wines.map(w=>w.produttore).filter(p=>p&&String(p).trim()).map(p=>String(p).trim()))].sort((a,b)=>a.localeCompare(b,'it'));
+  document.getElementById('dl-prod').innerHTML=prods.map(p=>'<option value="'+escapeHtml(p)+'">').join('');
+  refreshNameDatalist();
+}
+function refreshNameDatalist(){
+  const prod=document.getElementById('f-prod').value.trim().toLowerCase();
+  let src=state.wines;
+  if(prod) src=src.filter(w=>String(w.produttore||'').trim().toLowerCase()===prod);
+  const names=[...new Set(src.map(w=>w.nome).filter(n=>n&&String(n).trim()).map(n=>String(n).trim()))].sort((a,b)=>a.localeCompare(b,'it'));
+  const dl=document.getElementById('dl-nome'); if(dl) dl.innerHTML=names.map(n=>'<option value="'+escapeHtml(n)+'">').join('');
+}
+async function onRebuyChange(){
+  const id=document.getElementById('f-rebuy').value;
+  const prev=document.getElementById('photoPreview'); const hint=document.getElementById('photoHint');
+  const rh=document.getElementById('rebuyHint');
+  if(!id){
+    state.rebuySourceId=null; setRebuyReadonly(false); rh.style.display='none'; state.pendingImg=null;
+    prev.style.display='none'; prev.src=''; hint.style.display='flex';
+    ['f-prod','f-nome','f-annata','f-prezzo','f-voto'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('f-qty').value='1';
+    return;
+  }
+  const w=state.wines.find(x=>x.id===id); if(!w) return;
+  state.rebuySourceId=id;
+  document.getElementById('f-prod').value=w.produttore||'';
+  document.getElementById('f-nome').value=w.nome||'';
+  document.getElementById('f-annata').value=w.annata||'';
+  document.getElementById('f-prezzo').value=w.prezzo!=null?w.prezzo:'';
+  document.getElementById('f-voto').value=w.voto!=null?w.voto:'';
+  document.getElementById('f-qty').value='1';
+  setRebuyReadonly(true); rh.style.display='block';
+  if(w.hasImg){ const data=await getImage(w.id); if(data){ prev.src=data; prev.style.display='block'; hint.style.display='none'; } }
+  else { prev.style.display='none'; prev.src=''; hint.style.display='flex'; }
+}
+async function openEdit(id){
+  const w=state.wines.find(x=>x.id===id); if(!w) return;
+  state.editId=id; state.recallSourceId=null; state.rebuySourceId=null;
+  document.querySelector('.seg').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+  setKind(w.kind);
+  setRebuyReadonly(false);
+  populateDatalists();
+  document.getElementById('f-prod').value=w.produttore||'';
+  document.getElementById('f-nome').value=w.nome||'';
+  document.getElementById('f-annata').value=w.annata||'';
+  document.getElementById('f-prezzo').value=w.prezzo!=null?w.prezzo:'';
+  document.getElementById('f-voto').value=w.voto!=null?w.voto:'';
+  if(w.kind==='inventory'){
+    document.getElementById('f-qty').value=w.qty!=null?w.qty:1;
+    document.getElementById('qtyField').style.display = (w.status==='cellar')?'block':'none';
+  }
+  if(w.kind==='tasting'){
+    document.getElementById('f-locale').value=w.locale||'';
+    state.pendingLoc=(w.lat!=null&&w.lng!=null)?{lat:w.lat,lng:w.lng,area:null}:null;
+  }
+  const prev=document.getElementById('photoPreview'); const hint=document.getElementById('photoHint');
+  if(w.hasImg){ const data=await getImage(w.id); if(data){ state.pendingImg=data; prev.src=data; prev.style.display='block'; hint.style.display='none'; } }
+  else { state.pendingImg=null; prev.style.display='none'; prev.src=''; hint.style.display='flex'; }
+}
+function populateRecall(){
+  const sel=document.getElementById('f-fromcellar'); if(!sel) return;
+  const cellar=state.wines.filter(w=>w.kind==='inventory'&&w.status==='cellar'&&(w.qty||1)>0).sort((a,b)=>a.nome.localeCompare(b.nome,'it'));
+  sel.innerHTML='<option value="">— Vino nuovo (non dalla cantina) —</option>'+cellar.map(w=>`<option value="${w.id}">${w.produttore?escapeHtml(w.produttore)+' · ':''}${escapeHtml(w.nome)}${w.annata?' — '+escapeHtml(w.annata):''} (×${w.qty||1})</option>`).join('');
+  sel.value='';
+}
+async function onRecallChange(){
+  const id=document.getElementById('f-fromcellar').value;
+  const prev=document.getElementById('photoPreview'); const hint=document.getElementById('photoHint');
+  if(!id){
+    state.recallSourceId=null; state.pendingImg=null;
+    prev.style.display='none'; prev.src=''; hint.style.display='flex';
+    ['f-prod','f-nome','f-annata','f-voto'].forEach(x=>document.getElementById(x).value='');
+    return;
+  }
+  const w=state.wines.find(x=>x.id===id); if(!w) return;
+  state.recallSourceId=id;
+  document.getElementById('f-prod').value=w.produttore||'';
+  document.getElementById('f-nome').value=w.nome||'';
+  document.getElementById('f-annata').value=w.annata||'';
+  document.getElementById('f-voto').value = w.voto!=null ? w.voto : '';
+  if(w.hasImg){ const data=await getImage(w.id); if(data){ state.pendingImg=data; prev.src=data; prev.style.display='block'; hint.style.display='none'; } }
+  else { state.pendingImg=null; prev.style.display='none'; prev.src=''; hint.style.display='flex'; }
+}
+function openModal(){ state.editId=null; document.querySelector('.seg').style.display='flex'; setKind('inventory'); populateDatalists(); document.getElementById('overlay').classList.add('open'); document.getElementById('f-nome').focus(); }
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  ['f-prod','f-nome','f-annata','f-prezzo','f-voto','f-locale'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-qty').value='1';
+  const rc=document.getElementById('f-fromcellar'); if(rc) rc.value='';
+  const rb=document.getElementById('f-rebuy'); if(rb) rb.value='';
+  document.getElementById('rebuyHint').style.display='none';
+  setRebuyReadonly(false);
+  document.querySelector('.seg').style.display='flex';
+  state.pendingImg=null; state.pendingLoc=null; state.recallSourceId=null; state.rebuySourceId=null; state.editId=null;
+  const prev=document.getElementById('photoPreview'); prev.style.display='none'; prev.src='';
+  document.getElementById('photoHint').style.display='flex';
+  const gs=document.getElementById('geoStatus'); gs.textContent=''; gs.className='geo-status';
+}
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeModal(); });
+document.getElementById('photoInput').addEventListener('change', async e=>{
+  const file=e.target.files && e.target.files[0]; if(!file) return;
+  try{ const data=await compressImage(file); state.pendingImg=data;
+    const prev=document.getElementById('photoPreview'); prev.src=data; prev.style.display='block';
+    document.getElementById('photoHint').style.display='none';
+  }catch(err){ toast("Impossibile leggere l'immagine"); }
+});
+
+/* ---------- geolocalizzazione ---------- */
+function detectLocation(){
+  const gs=document.getElementById('geoStatus'); const btn=document.getElementById('geoBtn');
+  if(!('geolocation' in navigator)){ gs.className='geo-status err'; gs.textContent='Geolocalizzazione non disponibile: inserisci il locale a mano.'; return; }
+  gs.className='geo-status'; gs.textContent='Rilevamento in corso…'; btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=pos.coords.latitude,lng=pos.coords.longitude; state.pendingLoc={lat,lng,area:null};
+    gs.className='geo-status ok'; gs.textContent='Posizione rilevata ✓'; btn.disabled=false;
+    try{
+      const r=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lng+'&localityLanguage=it');
+      const j=await r.json(); const area=[j.locality||j.city,j.principalSubdivision].filter(Boolean).join(', ');
+      if(area){ state.pendingLoc.area=area; gs.textContent='Posizione rilevata ✓ · '+area;
+        const loc=document.getElementById('f-locale'); if(!loc.value.trim()) loc.value=area; }
+    }catch(err){}
+  }, err=>{ btn.disabled=false; gs.className='geo-status err';
+    gs.textContent = err.code===1?'Permesso negato: puoi inserire il locale a mano.':'Posizione non disponibile: inserisci il locale a mano.';
+  }, {enableHighAccuracy:true,timeout:9000,maximumAge:60000});
+}
+
+/* ---------- salvataggio vino ---------- */
+function normTxt(s){ return (s==null?'':String(s)).trim().toLowerCase(); }
+function normAnn(a){ return (a==null||a==='')?'':String(a).trim(); }
+function sameWine(w,prod,nome,ann){ return normTxt(w.produttore)===normTxt(prod) && normTxt(w.nome)===normTxt(nome) && normAnn(w.annata)===normAnn(ann); }
+async function saveWine(){
+  const kind=state.modalKind;
+  const produttore=document.getElementById('f-prod').value.trim();
+  const nome=document.getElementById('f-nome').value.trim();
+  const annata=document.getElementById('f-annata').value.trim();
+  const prezzo=document.getElementById('f-prezzo').value.trim();
+  const votoRaw=document.getElementById('f-voto').value.trim();
+  const locale=document.getElementById('f-locale').value.trim();
+  if(!nome){ toast('Inserisci almeno il nome del vino'); document.getElementById('f-nome').focus(); return; }
+  const voto=votoRaw===''?null:Math.max(0,Math.min(100,Math.round(Number(votoRaw))));
+  const qtyRaw=document.getElementById('f-qty').value.trim();
+  const qty = kind==='inventory' ? Math.max(1, Math.round(Number(qtyRaw)||1)) : 1;
+  const btn=document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='Salvataggio…';
+
+  // --- MODIFICA di un vino esistente ---
+  if(state.editId){
+    const w=state.wines.find(x=>x.id===state.editId);
+    if(w){
+      w.produttore=produttore||null; w.nome=nome; w.annata=annata||null; w.prezzo=prezzo!==''?Number(prezzo):null; w.voto=voto;
+      if(w.kind==='inventory' && w.status==='cellar'){ w.qty=qty; }
+      if(w.kind==='tasting'){ w.locale=locale||null; if(state.pendingLoc){ w.lat=state.pendingLoc.lat; w.lng=state.pendingLoc.lng; } }
+      if(state.pendingImg){ await saveImage(w.id,state.pendingImg); w.hasImg=true; w.imgAt=Date.now(); }
+      await saveIndex();
+    }
+    btn.disabled=false; closeModal(); render(); toast('Modifiche salvate');
+    return;
+  }
+
+  // --- RICOMPRO: stesso vino, gestione per annata ---
+  if(kind==='inventory' && state.rebuySourceId){
+    const src=state.wines.find(x=>x.id===state.rebuySourceId);
+    const prodV=produttore||null, annV=annata||null;
+    const annLabel = annV?(' '+annV):'';
+    // stessa etichetta e stessa annata, già in cantina → sommo
+    const match=state.wines.find(w=>w.kind==='inventory' && w.status==='cellar' && sameWine(w,prodV,nome,annV));
+    if(match){
+      match.qty=(match.qty||0)+qty; await saveIndex();
+      btn.disabled=false; closeModal(); state.filter='cellar'; syncTabs(); render();
+      toast('Aggiunte '+qty+(qty===1?' bottiglia':' bottiglie')+' a '+match.nome+annLabel); return;
+    }
+    // stessa etichetta e annata ma già finita → rimetto in cantina
+    const cons=state.wines.find(w=>w.kind==='inventory' && w.status==='consumed' && sameWine(w,prodV,nome,annV));
+    if(cons){
+      cons.status='cellar'; cons.qty=qty; cons.consumedAt=null; await saveIndex();
+      btn.disabled=false; closeModal(); state.filter='cellar'; syncTabs(); render();
+      toast('Rimesse in cantina '+qty+(qty===1?' bottiglia':' bottiglie')+' di '+cons.nome+annLabel); return;
+    }
+    // annata nuova per lo stesso vino → voce separata, riusando la foto
+    const newId='w'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    let imgData=state.pendingImg;
+    if(!imgData && src && src.hasImg){ imgData=await getImage(src.id); }
+    if(imgData){ await saveImage(newId,imgData); }
+    const nw={ id:newId, kind:'inventory', produttore:prodV, nome, annata:annV, prezzo:prezzo!==''?Number(prezzo):null, voto, qty,
+      status:'cellar', hasImg:!!imgData, imgAt:imgData?Date.now():null, addedAt:Date.now(), consumedAt:null, locale:null, lat:null, lng:null, tastedAt:null };
+    state.wines.push(nw); await saveIndex();
+    btn.disabled=false; closeModal(); state.filter='cellar'; syncTabs(); render();
+    toast('Aggiunto '+nome+annLabel+' ('+qty+(qty===1?' bottiglia':' bottiglie')+')'); return;
+  }
+
+  // --- NUOVO inserimento ---
+  const id='w'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const wine={ id,kind,produttore:produttore||null,nome, annata:annata||null, prezzo:prezzo!==''?Number(prezzo):null, voto, qty,
+    status:kind==='inventory'?'cellar':'tasting', hasImg:!!state.pendingImg, imgAt:state.pendingImg?Date.now():null, addedAt:Date.now(), consumedAt:null,
+    locale:kind==='tasting'?(locale||null):null,
+    lat:kind==='tasting'&&state.pendingLoc?state.pendingLoc.lat:null,
+    lng:kind==='tasting'&&state.pendingLoc?state.pendingLoc.lng:null,
+    tastedAt:kind==='tasting'?Date.now():null };
+  const recallId = kind==='tasting' ? state.recallSourceId : null;
+  if(state.pendingImg){ await saveImage(id,state.pendingImg); }
+  state.wines.push(wine);
+  let extra='';
+  if(recallId){
+    const src=state.wines.find(x=>x.id===recallId);
+    if(src){
+      src.qty=(src.qty||1)-1;
+      if(src.qty<=0){ state.wines=state.wines.filter(x=>x.id!==src.id); await deleteImage(src.id); extra=' · ultima bottiglia tolta dalla cantina'; }
+      else { extra=' · rimossa 1 bottiglia dalla cantina'; }
+    }
+  }
+  await saveIndex();
+  btn.disabled=false; closeModal();
+  state.filter=kind==='tasting'?'tasting':'cellar'; syncTabs(); render();
+  toast((kind==='tasting'?'Degustazione registrata':'Vino aggiunto alla cantina')+extra);
+}
+
+/* ---------- azioni ---------- */
+async function drinkBottle(id){
+  const w=state.wines.find(x=>x.id===id); if(!w) return;
+  w.qty=(w.qty||1)-1;
+  if(w.qty<=0){ state.wines=state.wines.filter(x=>x.id!==id); await deleteImage(id); await saveIndex(); render(); toast('Ultima bottiglia bevuta — vino esaurito'); }
+  else { await saveIndex(); render(); toast('Bottiglia bevuta — ne restano '+w.qty); }
+}
+async function addBottle(id){ const w=state.wines.find(x=>x.id===id); if(!w) return; w.qty=(w.qty||0)+1; await saveIndex(); render(); toast('Aggiunta una bottiglia — totale '+w.qty); }
+function reviewFromCellar(id){
+  openModal();
+  setKind('tasting');
+  const sel=document.getElementById('f-fromcellar'); if(sel){ sel.value=id; onRecallChange(); }
+}
+async function deleteWine(id){ const w=state.wines.find(x=>x.id===id); if(!w) return; if(!confirm('Eliminare "'+w.nome+'" definitivamente?')) return; state.wines=state.wines.filter(x=>x.id!==id); await deleteImage(id); await saveIndex(); render(); toast('Eliminato'); }
+
+/* ---------- render ---------- */
+function scoreColor(v){ if(v==null) return null; if(v>=95) return '#e6cd8f'; if(v>=90) return '#c9a24b'; if(v>=85) return '#c98b52'; if(v>=80) return '#b0794e'; return '#8a6f5f'; }
+function fmtPrice(p){ return p==null?'—':'€'+Number(p).toLocaleString('it-IT',{minimumFractionDigits:p%1?2:0,maximumFractionDigits:2}); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}); }
+function setFilter(f){ state.filter=f; state.yearFilter=null; state.prodFilter=null; syncTabs(); render(); }
+function showYear(k){ state.yearFilter=k; state.prodFilter=null; state.filter='cellar'; syncTabs(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function clearYear(){ state.yearFilter=null; render(); }
+function showProducer(enc){ state.prodFilter=decodeURIComponent(enc); state.yearFilter=null; state.filter='cellar'; syncTabs(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function clearProd(){ state.prodFilter=null; render(); }
+function syncTabs(){ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===state.filter)); }
+function inTab(w){
+  if(state.filter==='cellar') return w.kind==='inventory' && w.status==='cellar';
+  if(state.filter==='tasting') return w.kind==='tasting';
+  return false;
+}
+function sortWines(list){
+  const s=document.getElementById('sort').value; const arr=[...list];
+  if(s==='added') arr.sort((a,b)=>b.addedAt-a.addedAt);
+  if(s==='voto') arr.sort((a,b)=>(b.voto==null?-1:b.voto)-(a.voto==null?-1:a.voto));
+  if(s==='prezzo') arr.sort((a,b)=>(b.prezzo==null?-1:b.prezzo)-(a.prezzo==null?-1:a.prezzo));
+  if(s==='annata') arr.sort((a,b)=>(Number(b.annata)||0)-(Number(a.annata)||0));
+  if(s==='nome') arr.sort((a,b)=>a.nome.localeCompare(b.nome,'it'));
+  return arr;
+}
+function renderStats(){
+  const cellar=state.wines.filter(w=>w.kind==='inventory'&&w.status==='cellar');
+  const totBottles=cellar.reduce((s,w)=>s+(w.qty||1),0);
+  const val=cellar.reduce((s,w)=>s+((w.prezzo||0)*(w.qty||1)),0);
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="k">Bottiglie in cantina</div><div class="v">${totBottles}</div></div>
+    <div class="stat"><div class="k">Valore stimato</div><div class="v">${val?('€'+val.toLocaleString('it-IT',{maximumFractionDigits:0})):'—'}</div></div>`;
+  document.getElementById('c-cellar').textContent=totBottles;
+  document.getElementById('c-tasting').textContent=state.wines.filter(w=>w.kind==='tasting').length;
+}
+function renderGiacenza(){
+  const content=document.getElementById('content');
+  const cellar=state.wines.filter(w=>w.kind==='inventory' && w.status==='cellar');
+  if(cellar.length===0){ content.innerHTML=`<div class="empty"><h3>La cantina è vuota</h3><p>La giacenza per annata comparirà qui man mano che aggiungi bottiglie.</p></div>`; return; }
+  const groups={};
+  cellar.forEach(w=>{ const key=w.annata?String(w.annata):'—'; (groups[key]=groups[key]||[]).push(w); });
+  const keys=Object.keys(groups).sort((a,b)=>{ if(a==='—') return 1; if(b==='—') return -1; return Number(b)-Number(a); });
+  const annateCount=keys.filter(k=>k!=='—').length;
+  const totBottles=cellar.reduce((s,w)=>s+(w.qty||1),0);
+  let html=`<div class="giac-summary"><span><b>${totBottles}</b>bottiglie in cantina</span><span><b>${annateCount}</b>annate diverse</span></div>`;
+  keys.forEach(k=>{
+    const bottles=groups[k].slice().sort((a,b)=>a.nome.localeCompare(b.nome,'it'));
+    const yearQty=bottles.reduce((s,w)=>s+(w.qty||1),0);
+    const val=bottles.reduce((s,w)=>s+((w.prezzo||0)*(w.qty||1)),0);
+    const yearCls=k==='—'?'giac-year none':'giac-year';
+    const yearLabel=k==='—'?'Senza annata':k;
+    html+=`<div class="giac-group">
+      <div class="giac-head" role="button" tabindex="0" onclick="showYear('${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showYear('${k}')}">
+        <div class="${yearCls}">${yearLabel}</div>
+        <div class="giac-nums">
+          <span class="giac-count"><b>${yearQty}</b>${yearQty===1?'bottiglia':'bottiglie'}</span>
+          ${val?`<span class="giac-val">${fmtPrice(val)}</span>`:''}
+        </div>
+        <span class="giac-chevron">›</span>
+      </div>
+      <div class="giac-bottles">
+        ${bottles.map(w=>{
+          const col=scoreColor(w.voto);
+          const badge=w.voto!=null?`<span class="bv" style="background:${col}">${w.voto}</span>`:`<span class="bv none">n.v.</span>`;
+          const qtag=(w.qty||1)>1?`<span class="bq">×${w.qty}</span>`:'';
+          return `<div class="giac-bottle" onclick="openEdit('${w.id}')">${badge}<span class="bn">${escapeHtml(w.nome)}</span>${qtag}<span class="bp">${fmtPrice(w.prezzo)}</span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  content.innerHTML=html;
+}
+
+function renderProducer(){
+  const content=document.getElementById('content');
+  const cellar=state.wines.filter(w=>w.kind==='inventory' && w.status==='cellar');
+  if(cellar.length===0){ content.innerHTML=`<div class="empty"><h3>La cantina è vuota</h3><p>Il riepilogo per produttore comparirà qui man mano che aggiungi bottiglie.</p></div>`; return; }
+  const groups={};
+  cellar.forEach(w=>{ const key=(w.produttore&&w.produttore.trim())?w.produttore.trim():'—'; (groups[key]=groups[key]||[]).push(w); });
+  const keys=Object.keys(groups).sort((a,b)=>{ if(a==='—') return 1; if(b==='—') return -1; return a.localeCompare(b,'it'); });
+  const prodCount=keys.filter(k=>k!=='—').length;
+  const totBottles=cellar.reduce((s,w)=>s+(w.qty||1),0);
+  let html=`<div class="giac-summary"><span><b>${totBottles}</b>bottiglie in cantina</span><span><b>${prodCount}</b>produttori</span></div>`;
+  keys.forEach(k=>{
+    const bottles=groups[k].slice().sort((a,b)=>a.nome.localeCompare(b.nome,'it'));
+    const pQty=bottles.reduce((s,w)=>s+(w.qty||1),0);
+    const val=bottles.reduce((s,w)=>s+((w.prezzo||0)*(w.qty||1)),0);
+    const label=k==='—'?'Senza produttore':escapeHtml(k);
+    const cls=k==='—'?'giac-year none':'giac-year prod';
+    html+=`<div class="giac-group">
+      <div class="giac-head" role="button" tabindex="0" onclick="showProducer('${encodeURIComponent(k)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showProducer('${encodeURIComponent(k)}')}">
+        <div class="${cls}">${label}</div>
+        <div class="giac-nums">
+          <span class="giac-count"><b>${pQty}</b>${pQty===1?'bottiglia':'bottiglie'}</span>
+          ${val?`<span class="giac-val">${fmtPrice(val)}</span>`:''}
+        </div>
+        <span class="giac-chevron">›</span>
+      </div>
+      <div class="giac-bottles">
+        ${bottles.map(w=>{
+          const col=scoreColor(w.voto);
+          const badge=w.voto!=null?`<span class="bv" style="background:${col}">${w.voto}</span>`:`<span class="bv none">n.v.</span>`;
+          const qtag=(w.qty||1)>1?`<span class="bq">×${w.qty}</span>`:'';
+          const yr=w.annata?` <span class="by">${escapeHtml(w.annata)}</span>`:'';
+          return `<div class="giac-bottle" onclick="openEdit('${w.id}')">${badge}<span class="bn">${escapeHtml(w.nome)}${yr}</span>${qtag}<span class="bp">${fmtPrice(w.prezzo)}</span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  content.innerHTML=html;
+}
+
+function tastingToolbar(){
+  const opt=(v,label)=>`<button class="tview-btn${state.tastingView===v?' active':''}" onclick="setTastingView('${v}')">${label}</button>`;
+  const dup=countDuplicateNv();
+  const clean=dup>0?`<button class="tview-btn clean-btn" onclick="pulisciDoppioni()" title="Rimuovi le degustazioni n.v. doppie">Pulisci doppioni (${dup})</button>`:'';
+  return `<div class="tview">${opt('list','Elenco')}${opt('year','Per annata')}${opt('producer','Per produttore')}${clean}</div>`;
+}
+function setTastingView(v){ state.tastingView=v; render(); }
+function dupKey(w){ return normTxt(w.produttore)+'|'+normTxt(w.nome)+'|'+normAnn(w.annata); }
+function findDuplicateNvIds(){
+  const groups={};
+  state.wines.filter(w=>w.kind==='tasting').forEach(w=>{ (groups[dupKey(w)]=groups[dupKey(w)]||[]).push(w); });
+  const ids=[];
+  Object.keys(groups).forEach(k=>{
+    const g=groups[k]; if(g.length<2) return;
+    const hasVoto=g.some(w=>w.voto!=null);
+    if(hasVoto){ g.filter(w=>w.voto==null).forEach(w=>ids.push(w.id)); }
+  });
+  return ids;
+}
+function countDuplicateNv(){ return findDuplicateNvIds().length; }
+async function pulisciDoppioni(){
+  const ids=findDuplicateNvIds();
+  if(ids.length===0){ toast('Nessun doppione da rimuovere'); return; }
+  if(!confirm('Trovati '+ids.length+' doppioni (la copia senza voto di vini già presenti con voto). Elimino le copie senza voto?')) return;
+  const set={}; ids.forEach(id=>set[id]=true);
+  for(const id of ids){ await deleteImage(id); }
+  state.wines=state.wines.filter(w=>!set[w.id]);
+  await saveIndex(); render();
+  toast(ids.length+(ids.length===1?' doppione rimosso':' doppioni rimossi'));
+}
+function onTastingSearch(){ state.tastingSearch=document.getElementById('tq').value||''; render(); }
+function matchTasting(w){
+  const q=(state.tastingSearch||'').trim().toLowerCase(); if(!q) return true;
+  return String(w.produttore||'').toLowerCase().indexOf(q)>=0 || String(w.nome||'').toLowerCase().indexOf(q)>=0;
+}
+function renderTastingGrouped(mode){
+  const content=document.getElementById('content');
+  const bar=tastingToolbar();
+  const tastings=state.wines.filter(w=>w.kind==='tasting').filter(matchTasting);
+  if(tastings.length===0){ content.innerHTML=bar+`<div class="empty"><h3>Nessuna degustazione</h3><p>${(state.tastingSearch||'').trim()?'Nessun risultato per "'+escapeHtml(state.tastingSearch.trim())+'".':'Registra una degustazione per vederla raggruppata qui.'}</p></div>`; return; }
+  const groups={};
+  tastings.forEach(w=>{
+    const key = mode==='year' ? (w.annata?String(w.annata):'—') : ((w.produttore&&w.produttore.trim())?w.produttore.trim():'—');
+    (groups[key]=groups[key]||[]).push(w);
+  });
+  const keys=Object.keys(groups).sort((a,b)=>{ if(a==='—') return 1; if(b==='—') return -1; return mode==='year' ? (Number(b)-Number(a)) : a.localeCompare(b,'it'); });
+  const distinct=keys.filter(k=>k!=='—').length;
+  const groupWord = mode==='year' ? (distinct===1?'annata':'annate') : (distinct===1?'produttore':'produttori');
+  let html=bar+`<div class="giac-summary"><span><b>${tastings.length}</b>degustazioni</span><span><b>${distinct}</b>${groupWord}</span></div>`;
+  keys.forEach(k=>{
+    const items=groups[k].slice().sort((a,b)=>(b.tastedAt||0)-(a.tastedAt||0));
+    const label = k==='—' ? (mode==='year'?'Senza annata':'Senza produttore') : (mode==='year'?k:escapeHtml(k));
+    const cls = k==='—' ? 'giac-year none' : (mode==='year'?'giac-year':'giac-year prod');
+    html+=`<div class="giac-group">
+      <div class="giac-head giac-head-static">
+        <div class="${cls}">${label}</div>
+        <div class="giac-nums"><span class="giac-count"><b>${items.length}</b>${items.length===1?'degustazione':'degustazioni'}</span></div>
+      </div>
+      <div class="giac-bottles">
+        ${items.map(w=>{
+          const col=scoreColor(w.voto);
+          const badge=w.voto!=null?`<span class="bv" style="background:${col}">${w.voto}</span>`:`<span class="bv none">n.v.</span>`;
+          const secondary = mode==='year' ? (w.produttore?` <span class="by">${escapeHtml(w.produttore)}</span>`:'') : (w.annata?` <span class="by">${escapeHtml(w.annata)}</span>`:'');
+          const when=w.tastedAt?`<span class="bp">${fmtDate(w.tastedAt)}</span>`:'';
+          return `<div class="giac-bottle" onclick="openEdit('${w.id}')">${badge}<span class="bn">${escapeHtml(w.nome)}${secondary}</span>${when}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  content.innerHTML=html;
+}
+
+function render(){
+  renderStats();
+  const ts=document.getElementById('tsearch'); if(ts) ts.style.display = state.filter==='tasting' ? 'block' : 'none';
+  if(state.filter==='giacenza'){ renderGiacenza(); return; }
+  if(state.filter==='producer'){ renderProducer(); return; }
+  if(state.filter==='tasting' && state.tastingView!=='list'){ renderTastingGrouped(state.tastingView); return; }
+  const content=document.getElementById('content');
+  const yearActive = state.filter==='cellar' && state.yearFilter;
+  const prodActive = state.filter==='cellar' && state.prodFilter;
+  let base=state.wines.filter(inTab);
+  if(state.filter==='tasting'){ base=base.filter(matchTasting); }
+  if(yearActive){ base=base.filter(w=>(w.annata?String(w.annata):'—')===state.yearFilter); }
+  if(prodActive){ base=base.filter(w=>((w.produttore&&w.produttore.trim())?w.produttore.trim():'—')===state.prodFilter); }
+  const list=sortWines(base);
+  let chip='';
+  if(yearActive){
+    const label = state.yearFilter==='—' ? 'Senza annata' : ('Annata '+state.yearFilter);
+    chip=`<div class="year-chip">${label} · ${list.length} ${list.length===1?'bottiglia':'bottiglie'}<button onclick="clearYear()" aria-label="Rimuovi filtro">✕</button></div>`;
+  } else if(prodActive){
+    const label = state.prodFilter==='—' ? 'Senza produttore' : escapeHtml(state.prodFilter);
+    chip=`<div class="year-chip">${label} · ${list.length} ${list.length===1?'bottiglia':'bottiglie'}<button onclick="clearProd()" aria-label="Rimuovi filtro">✕</button></div>`;
+  }
+  const prefix=(state.filter==='tasting'?tastingToolbar():'')+chip;
+  if(list.length===0){
+    const searching = state.filter==='tasting' && (state.tastingSearch||'').trim();
+    const msg = searching ? {h:'Nessun risultato',p:'Nessuna degustazione corrisponde a "'+escapeHtml(state.tastingSearch.trim())+'".'}
+      : state.filter==='cellar' ? {h:'La cantina è vuota',p:'Aggiungi il primo vino con il pulsante in alto a destra.'}
+      : {h:'Nessuna degustazione',p:'Apri "Aggiungi vino" e scegli "Degustazione": registra un vino bevuto fuori, oppure richiamalo dalla tua cantina riusando la foto del caricamento.'};
+    content.innerHTML=prefix+`<div class="empty"><h3>${msg.h}</h3><p>${msg.p}</p></div>`; return;
+  }
+  content.innerHTML=prefix+'<div class="grid">'+ list.map(w=>{
+    const col=scoreColor(w.voto);
+    const badge = w.voto!=null ? `<div class="score" style="background:${col}">${w.voto}</div>` : `<div class="score s-none">n.v.</div>`;
+    let sub='';
+    if(w.kind==='tasting'){
+      const mapLink=(w.lat!=null&&w.lng!=null)?`<a class="map" href="https://www.google.com/maps?q=${w.lat},${w.lng}" target="_blank" rel="noopener">Vedi su mappa ↗</a>`:'';
+      const place=w.locale?`<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>${escapeHtml(w.locale)}</div>`:'';
+      const when=w.tastedAt?`<span>${fmtDate(w.tastedAt)}</span>`:'';
+      sub=`<div class="subline">${place}${when}${mapLink}</div>`;
+    }
+    const qtyBadge = w.kind==='inventory'&&w.status==='cellar'
+      ? `<div class="qbadge" title="Bottiglie in cantina"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v5l1.5 3v10a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2V10L10 7V2Z"/></svg>${w.qty||1}</div>` : '';
+    const reviewBtn = w.kind==='inventory'&&w.status==='cellar'
+      ? `<button class="review-btn" onclick="reviewFromCellar('${w.id}')" title="Bevi e sposta nelle degustazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3h8l-1 8a3 3 0 0 1-6 0L8 3Z"/><path d="M12 14v5"/><path d="M8.5 21h7"/></svg></button>` : '';
+    let actions;
+    if(w.kind==='tasting'){ actions=`<button class="act back" onclick="deleteWine('${w.id}')">Elimina degustazione</button>`; }
+    else { actions=`<button class="act drink" onclick="drinkBottle('${w.id}')" title="Ho bevuto una bottiglia">Bevuta</button><button class="act plusb" onclick="addBottle('${w.id}')" title="Aggiungi una bottiglia">+</button><button class="act del" title="Elimina" onclick="deleteWine('${w.id}')">✕</button>`; }
+    return `<div class="card">
+      <div class="photo">
+        <div class="noimg" id="ph-${w.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 2h4v5l1.5 3v10a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2V10L10 7V2Z"/></svg><span>Etichetta</span></div>
+        ${qtyBadge}
+        ${badge}
+        ${reviewBtn}
+        <button class="edit-btn" onclick="openEdit('${w.id}')" title="Modifica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M13.5 6.5l3 3"/></svg></button>
+      </div>
+      <div class="body">
+        ${w.produttore?`<div class="producer">${escapeHtml(w.produttore)}</div>`:''}
+        <div class="name">${escapeHtml(w.nome)}</div>
+        <div class="meta"><span class="year">${w.annata?escapeHtml(w.annata):'—'}</span><span class="price">${fmtPrice(w.prezzo)}</span></div>
+        ${sub}
+        <div class="card-actions">${actions}</div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+  list.forEach(async w=>{
+    if(!w.hasImg) return;
+    const data=await getImage(w.id); if(!data) return;
+    const holder=document.getElementById('ph-'+w.id);
+    if(holder){ const img=document.createElement('img'); img.src=data; img.alt=w.nome; holder.parentElement.insertBefore(img,holder); holder.remove(); }
+  });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+let toastTimer;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+
+(async function init(){
+  await initStorage();
+  syncCfg=await getSyncCfg();
+  cantinaSigs=await getCantinaSigs();
+  updateDataNote();
+  await loadIndex();
+  render();
+  if(syncCfg && syncCfg.on){
+    setSyncDot('busy');
+    const ok=await pullCantina();
+    if(ok){ render(); fetchMissingPhotos(); } else { setSyncDot('err'); }
+  }
+})();
+</script>
