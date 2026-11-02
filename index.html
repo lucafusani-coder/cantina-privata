@@ -288,6 +288,7 @@
         <label for="f-fromcellar">Richiama dalla cantina</label>
         <select id="f-fromcellar" class="recall-select" onchange="onRecallChange()"><option value="">— Vino nuovo (non dalla cantina) —</option></select>
       </div>
+      <div class="field"><label for="f-data">Data della degustazione</label><input id="f-data" type="date"></div>
       <div class="field"><label for="f-locale">Locale / luogo</label><input id="f-locale" type="text" placeholder="Es. Osteria da Mario" autocomplete="off"></div>
       <button class="geo-btn" id="geoBtn" onclick="detectLocation()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10Z"/><circle cx="12" cy="11" r="2.2"/></svg>
@@ -901,6 +902,7 @@ async function openEdit(id){
   }
   if(w.kind==='tasting'){
     document.getElementById('f-locale').value=w.locale||'';
+    document.getElementById('f-data').value = w.tastedAt?tsToDateInput(w.tastedAt):tsToDateInput(Date.now());
     state.pendingLoc=(w.lat!=null&&w.lng!=null)?{lat:w.lat,lng:w.lng,area:null}:null;
   }
   const prev=document.getElementById('photoPreview'); const hint=document.getElementById('photoHint');
@@ -931,7 +933,9 @@ async function onRecallChange(){
   if(w.hasImg){ const data=await getImage(w.id); if(data){ state.pendingImg=data; prev.src=data; prev.style.display='block'; hint.style.display='none'; } }
   else { state.pendingImg=null; prev.style.display='none'; prev.src=''; hint.style.display='flex'; }
 }
-function openModal(){ state.editId=null; document.querySelector('.seg').style.display='flex'; setKind('inventory'); populateDatalists(); document.getElementById('overlay').classList.add('open'); document.getElementById('f-nome').focus(); }
+function openModal(){ state.editId=null; document.querySelector('.seg').style.display='flex'; setKind('inventory'); populateDatalists(); const fd=document.getElementById('f-data'); if(fd) fd.value=tsToDateInput(Date.now()); document.getElementById('overlay').classList.add('open'); document.getElementById('f-nome').focus(); }
+function tsToDateInput(ts){ try{ const d=new Date(Number(ts)); const y=d.getFullYear(); const m=('0'+(d.getMonth()+1)).slice(-2); const g=('0'+d.getDate()).slice(-2); return y+'-'+m+'-'+g; }catch(e){ return ''; } }
+function dateInputToTs(str){ if(!str) return null; const p=String(str).split('-'); if(p.length!==3) return null; const y=+p[0],m=+p[1],g=+p[2]; if(!y||!m||!g) return null; return new Date(y,m-1,g,12,0,0).getTime(); }
 function closeModal(){
   document.getElementById('overlay').classList.remove('open');
   ['f-prod','f-nome','f-annata','f-prezzo','f-voto','f-locale'].forEach(id=>document.getElementById(id).value='');
@@ -986,6 +990,7 @@ async function saveWine(){
   const prezzo=document.getElementById('f-prezzo').value.trim();
   const votoRaw=document.getElementById('f-voto').value.trim();
   const locale=document.getElementById('f-locale').value.trim();
+  const dataVal=document.getElementById('f-data')?document.getElementById('f-data').value:'';
   if(!nome){ toast('Inserisci almeno il nome del vino'); document.getElementById('f-nome').focus(); return; }
   const voto=votoRaw===''?null:Math.max(0,Math.min(100,Math.round(Number(votoRaw))));
   const qtyRaw=document.getElementById('f-qty').value.trim();
@@ -998,7 +1003,7 @@ async function saveWine(){
     if(w){
       w.produttore=produttore||null; w.nome=nome; w.annata=annata||null; w.prezzo=prezzo!==''?Number(prezzo):null; w.voto=voto;
       if(w.kind==='inventory' && w.status==='cellar'){ w.qty=qty; }
-      if(w.kind==='tasting'){ w.locale=locale||null; if(state.pendingLoc){ w.lat=state.pendingLoc.lat; w.lng=state.pendingLoc.lng; } }
+      if(w.kind==='tasting'){ w.locale=locale||null; if(state.pendingLoc){ w.lat=state.pendingLoc.lat; w.lng=state.pendingLoc.lng; } const nt=dateInputToTs(dataVal); if(nt) w.tastedAt=nt; }
       if(state.pendingImg){ await saveImage(w.id,state.pendingImg); w.hasImg=true; w.imgAt=Date.now(); }
       await saveIndex();
     }
@@ -1044,7 +1049,7 @@ async function saveWine(){
     locale:kind==='tasting'?(locale||null):null,
     lat:kind==='tasting'&&state.pendingLoc?state.pendingLoc.lat:null,
     lng:kind==='tasting'&&state.pendingLoc?state.pendingLoc.lng:null,
-    tastedAt:kind==='tasting'?Date.now():null };
+    tastedAt:kind==='tasting'?(dateInputToTs(dataVal)||Date.now()):null };
   const recallId = kind==='tasting' ? state.recallSourceId : null;
   if(state.pendingImg){ await saveImage(id,state.pendingImg); }
   state.wines.push(wine);
